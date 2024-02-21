@@ -1,0 +1,62 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ReviewController as CTRL
+participant ReviewRecomendationService as RRI
+participant ReviewRecomendation3 as RRI3
+participant ReviewRecomendation1 as RRI1
+participant ReviewRecomendation2 as RRI2
+participant ReviewRepository as REPO
+database BaseDados as DB
+
+USR -> CTRL: GET /reviews/recommended/{userId}
+activate CTRL
+CTRL-> RRI: reviews = ReviewRecomendationInterface.getReviewsRecommended(userId)
+activate RRI
+RRI -> RRI3: getReviewsRecommended(userId)
+activate RRI3
+RRI3 -> RRI1: reviewsRecommend1 = ReviewRecommendation1.getReviewsRecommended(userId))
+activate RRI1
+RRI1 -> REPO: findAll()
+deactivate RRI1
+activate REPO
+REPO -> DB : findAll()
+activate DB
+deactivate REPO
+deactivate DB
+RRI3->RRI2: reviewsRecommend2 = ReviewRecommendation2.getReviewsRecommended(userId))
+activate RRI2
+RRI2 -> REPO: findAll()
+activate REPO
+REPO -> DB : findAll()
+activate DB
+deactivate DB
+deactivate REPO
+deactivate RRI2
+deactivate REPO
+deactivate RRI1
+deactivate RRI3
+RRI -> REPO: personalReviews = findByUserIdRecommendation(userId)
+activate REPO
+REPO -> DB : findByUserIdRecommendation(userId)
+activate DB
+deactivate DB
+deactivate REPO
+loop all the commonReviews
+RRI -> REPO: findByUserId(user)
+activate REPO
+REPO -> DB: findByUserId(user)
+activate DB
+deactivate DB
+deactivate REPO
+end
+deactivate RRI
+deactivate DB
+deactivate REPO
+CTRL --> USR : Retorna as reviews recomendadas
+deactivate CTRL
+
+@enduml

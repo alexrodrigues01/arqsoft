@@ -1,0 +1,159 @@
+#  Template maven-build
+
+#  This template allows you to test and build your Java project with Maven.
+#  The workflow allows running tests, code checkstyle and security scans on the default branch.
+
+# Prerequisites: pom.xml and appropriate project structure should exist in the repository.
+
+image: maven:3.6.3
+
+pipelines:
+  default:
+    - parallel:
+        steps:
+          - step:
+              name: Build and Test Product Command
+              caches:
+                - maven
+              script:
+                - cd P2/ProductCommand
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Product Query
+              caches:
+                - maven
+              script:
+                - cd P2/ProductQuery
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Product Events
+              caches:
+                - maven
+              script:
+                - cd P2/ProductEvents
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Review Command
+              caches:
+                - maven
+              script:
+                - cd P2/Review/ReviewCommand
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Review Query
+              caches:
+                - maven
+              script:
+                - cd P2/Review/ReviewQuery
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Review Events
+              caches:
+                - maven
+              script:
+                - cd P2/Review/ReviewEvents
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Vote Command
+              caches:
+                - maven
+              script:
+                - cd P2/Vote/VoteCommand
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Vote Query
+              caches:
+                - maven
+              script:
+                - cd P2/Vote/VoteQuery
+                - mvn -B verify --file pom.xml
+          - step:
+              name: Build and Test Vote Events
+              caches:
+                - maven
+              script:
+                - cd P2/Vote/VoteEvents
+                - mvn -B verify --file pom.xml
+    - parallel:
+        steps:
+          - step:
+              name: Build and Push Docker Image Product Command
+              services:
+                - docker
+              script:
+                - cd P2/ProductCommand
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Command .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Command
+          - step:
+              name: Build and Push Docker Image Product Query
+              services:
+                - docker
+              script:
+                - cd P2/ProductQuery
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Query .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Query
+          - step:
+              name: Build and Push Docker Image Product Events
+              services:
+                - docker
+              script:
+                - cd P2/ProductEvents
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Events .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Product_Events
+          - step:
+              name: Build and Push Docker Image Review Command
+              services:
+                - docker
+              script:
+                - cd P2/Review/ReviewCommand
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Command .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Command
+          - step:
+              name: Build and Push Docker Image Review Query
+              services:
+                - docker
+              script:
+                - cd P2/Review/ReviewQuery
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Query .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Query
+          - step:
+              name: Build and Push Docker Image Review Events
+              services:
+                - docker
+              script:
+                - cd P2/Review/ReviewEvents
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Events .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Review_Events
+          - step:
+              name: Build and Push Docker Image Vote Command
+              services:
+                - docker
+              script:
+                - cd P2/Vote/VoteCommand
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Command .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Command
+          - step:
+              name: Build and Push Docker Image Vote Query
+              services:
+                - docker
+              script:
+                - cd P2/Vote/VoteQuery
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Query .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Query
+          - step:
+              name: Build and Push Docker Image Vote Events
+              services:
+                - docker
+              script:
+                - cd P2/Vote/VoteEvents
+                - docker build -t 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Events .
+                - docker login --username 1191018 --password arqsoft2023
+                - docker push 1191018/arqsoft_1190914_1191018_1191042:latest_Vote_Events

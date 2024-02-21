@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ReviewController as CTRL
+participant ReviewRecomendationInterface as SRV
+participant ProductRepository as REPO
+database BaseDados as DB
+
+USR -> CTRL: GET /reviews/recommended/{userId}
+activate CTRL
+CTRL -> SRV: getReviewsRecommended(userId)
+activate SRV
+SRV-> REPO: save(product)
+activate REPO
+REPO -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPO
+deactivate SRV
+CTRL --> USR : Retorna o produto criado
+deactivate CTRL
+
+@enduml

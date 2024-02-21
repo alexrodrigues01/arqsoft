@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ProductController as CTRL
+participant ProductService as SRV
+participant ProductRepository as REPO
+database BaseDados as DB
+
+USR -> CTRL: POST /products
+activate CTRL
+CTRL -> SRV: create(product)
+activate SRV
+SRV-> REPO: save(product)
+activate REPO
+REPO -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPO
+deactivate SRV
+CTRL --> USR : Retorna o produto criado
+deactivate CTRL
+
+@enduml

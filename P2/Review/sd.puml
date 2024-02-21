@@ -1,0 +1,62 @@
+@startuml
+
+autonumber
+
+actor Moderator as USR
+participant ReviewController as CTRL
+participant ReviewService as SRV
+participant ReviewRepository as REPO
+participant UserService as REPO_USER
+database DataBase as DB
+
+USR -> CTRL: PUT /reviews/acceptreject/{idReview}
+activate CTRL
+CTRL -> SRV: moderateReview(reviewID, approved, userId)
+activate SRV
+SRV-> REPO: review = findById(reviewID)
+activate REPO
+deactivate REPO
+SRV-> REPO_USER: user = getUserId(reviewID)
+activate REPO_USER
+deactivate REPO_USER
+alt approved.equalsIgnoreCase("approved")
+    SRV -> "review:Review": addApprove(user)
+    activate "review:Review"
+    deactivate "review:Review"
+    SRV -> SRV: nrOfApprovesWithRecommendation = 0
+    loop each userApproved of review.getApproves()
+        SRV -> ReviewRecommendation: getReviewsRecommended(userApproved.getUserId())
+        activate ReviewRecommendation
+        ReviewRecommendation --> SRV: List<Review> recommendedReviews
+        deactivate ReviewRecommendation
+        alt recommendedReviews.contains(review)
+            SRV -> SRV: nrOfApprovesWithRecommendation++
+        end
+    end
+    alt nrOfApprovesWithRecommendation >= 2
+        SRV->Review: setApprovalStatus(approved)
+        activate Review
+        deactivate Review
+    end
+else
+SRV -> Review: removeApproveVote(user)
+activate Review
+SRV->Review: setApprovalStatus(approved)
+deactivate Review
+end
+SRV -> REPO: repository.save(review);
+activate REPO
+deactivate REPO
+SRV -> ReviewMapper: toDto(review)
+activate ReviewMapper
+ReviewMapper --> SRV: reviewDTO
+deactivate ReviewMapper
+SRV->CTRL: reviewDTO
+deactivate SRV
+CTRL -> CTRL: new Event(Update, reviewDTO)
+CTRL -> MessageBroker: sendMessage(event)
+activate MessageBroker
+deactivate MessageBroker
+CTRL --> USR : Informa do sucesso da operação
+deactivate CTRL
+ @enduml

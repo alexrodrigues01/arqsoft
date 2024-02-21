@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ProductController as CTRL
+participant ProductService as SRV
+participant ProductRepository as REPO
+database BaseDados as DB
+
+USR -> CTRL: DELETE /products/{sku}
+activate CTRL
+CTRL -> SRV: deleteBySku(sku)
+activate SRV
+SRV-> REPO: deleteBySku(sku)
+activate REPO
+REPO -> DB: DELETE(sku)
+activate DB
+deactivate DB
+deactivate REPO
+deactivate SRV
+CTRL --> USR : Informa sucesso da operação
+deactivate CTRL
+
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ProductController as CTRL
+participant ProductServiceImpl as SRV
+participant ProductRepositoryImpl as REPO
+
+
+participant ProductServiceMongoImpl as MONGOSRV
+participant ProductRepositoryMongo as REPOMONGO
+
+
+participant ProductServiceRedisImpl as REDISSRV
+participant ProductRepositoryRedis as REPOREDIS
+
+
+participant ProductServiceNeo4JImpl as NEO4JSRV
+participant ProductRepositoryRedis as REPONEO4J
+
+
+database BaseDados as DB
+
+USR -> CTRL: POST /products
+activate CTRL
+alt product.service=ProductServiceImpl
+CTRL -> SRV: create(product)
+activate SRV
+SRV-> REPO: save(product)
+activate REPO
+REPO -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPO
+deactivate SRV
+end alt
+
+
+alt product.service=ProductServiceMongoImpl
+CTRL -> MONGOSRV: create(product)
+activate MONGOSRV
+MONGOSRV-> REPOMONGO: save(product)
+activate REPOMONGO
+REPOMONGO -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPOMONGO
+deactivate MONGOSRV
+end alt
+
+
+alt product.service=ProductServiceRedisImpl
+CTRL -> REDISSRV: create(product)
+activate REDISSRV
+REDISSRV-> REPOREDIS: save(product)
+activate REPOREDIS
+REPOREDIS -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPOREDIS
+deactivate REDISSRV
+end alt
+
+
+alt product.service=ProductServiceNeo4JImpl
+CTRL -> NEO4JSRV: create(product)
+activate NEO4JSRV
+NEO4JSRV-> REPONEO4J: save(product)
+activate REPONEO4J
+REPONEO4J -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPONEO4J
+deactivate NEO4JSRV
+end alt
+
+
+
+CTRL --> USR : Retorna o produto criado
+deactivate CTRL
+
+@enduml

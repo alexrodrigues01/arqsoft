@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User as USR
+participant ProductController as CTRL
+participant ProductService as SRV
+participant SkuGenerationInterface as SKU
+participant ProductRepository as REPO
+participant Product as PRD
+database BaseDados as DB
+
+USR -> CTRL: POST /products/createWithoutSku/
+activate CTRL
+CTRL -> SRV: createWithoutSku(productWithNoSku)
+activate SRV
+SRV-> SKU: sku = SkuGenerationInterface.getSkuAlgorithm(productWithNoSku)
+activate SKU
+deactivate SKU
+SRV-> PRD: product = new Product(sku,productWithNoSku)
+activate PRD
+deactivate PRD
+SRV-> REPO: save(product)
+activate REPO
+REPO -> DB: save(product)
+activate DB
+deactivate DB
+deactivate REPO
+deactivate SRV
+CTRL --> USR : Retorna o produto criado
+deactivate CTRL
+
+@enduml

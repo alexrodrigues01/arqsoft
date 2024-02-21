@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor USER as USER
+box "ProductsCommand"
+participant "ProductController" as CTRL
+participant "ProductService" as SERV
+participant "ProductsRepository" as REPO
+database "ProductsCommandDB" as DB
+participant "UsersRepository" as USRREPO
+database "UsersDB" as USRDB
+participant "MessageBroker" as MSG
+
+USER -> CTRL : PATCH products/approve/sku/userName
+activate CTRL
+    CTRL-> SERV : approveProduct(sku,userName)
+    activate SERV
+        SERV -> REPO: product= findBySku(sku)
+                activate REPO
+                    REPO -> DB : findBySku(sku)
+                    activate DB
+                    deactivate DB
+                deactivate REPO
+        SERV-> USRREPO: findByUserName(userName)
+        activate USRREPO
+            USRREPO-> USRDB: findByUserName(userName)
+            activate USRDB
+            deactivate USRDB
+        deactivate USRREPO
+        SERV -> SERV : approveProduct(product)
+        SERV -> REPO : save(product)
+                        activate REPO
+                            REPO -> DB : save()
+                                                activate DB
+                                                deactivate DB
+                        deactivate REPO
+    deactivate SERV
+            CTRL -> CTRL : new event(update,product)
+            CTRL -> MSG : sendMessage(event)
+                activate MSG
+                deactivate MSG
+CTRL --> USER : Retorna o produto atualizado
+deactivate CTRL
+@enduml

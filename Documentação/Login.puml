@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor NonAuthenticatedUser as USR
+participant AuthenticationAPI as CTRL
+participant AuthenticationManager as SRV
+participant Authentication as REPO
+participant JWTEncoder as JWT
+
+USR -> CTRL: POST /auth/public/login
+activate CTRL
+CTRL -> SRV: authenticate(username,password)
+activate SRV
+SRV-> REPO: getPrincipal()
+activate REPO
+REPO -> JWT: encode()
+activate JWT
+deactivate JWT
+deactivate REPO
+deactivate SRV
+CTRL --> USR : Informa sucesso da operação \n e retorna o token de autorização
+deactivate CTRL
+
+@enduml

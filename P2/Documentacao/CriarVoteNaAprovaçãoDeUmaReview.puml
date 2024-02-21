@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant RunnerReview as USER
+box "VotesPost"
+participant "Receiver" as RCV
+participant "VotesService" as SERV
+participant "ReviewRepo" as REPO2
+participant "UserService" as SERV2
+participant "VotesRepo" as REPO
+database "VotesCommand" as DB
+participant "MessageBroker" as MSG
+participant "Vote" as VT
+
+ref over USER : Approve Review Diagram
+USER -> RCV : review
+activate RCV
+    RCV-> MSG : sendMessage(review,VoteQuery)
+    activate MSG
+    deactivate MSG
+    RCV-> SERV : create(vote)
+    activate SERV
+    SERV -> REPO2 : findById(idReview)
+    activate REPO2
+    deactivate REPO2
+    SERV -> SERV2: verifyUser(userId)
+    activate SERV2
+    deactivate SERV2
+
+    SERV -> VT : vote = new Vote(idReview,userId,vote)
+    activate VT
+    deactivate VT
+    SERV -> REPO: save(vote)
+    activate REPO
+    REPO -> DB: save(vote)
+    activate DB
+    deactivate DB
+    deactivate REPO
+
+    SERV -> VT : voteDTO = vote.toDTO()
+    activate VT
+    deactivate VT
+    deactivate SERV
+    RCV->MSG: sendMessage(voteDTO,VoteQuery)
+    activate MSG
+    deactivate MSG
+    RCV->MSG: sendMessage(voteDTO,VoteBootstrap)
+    activate MSG
+    deactivate MSG
+    RCV->MSG: sendMessage(voteDTO,ReviewCommand)
+    activate MSG
+    deactivate MSG
+    
+deactivate RCV
+@enduml

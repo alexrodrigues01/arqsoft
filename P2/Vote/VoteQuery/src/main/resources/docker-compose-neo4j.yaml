@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  neo4j1:
+    image: neo4j:5
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/verysecret
+
+  neo4j2:
+    image: neo4j:5
+    ports:
+      - "7475:7474"
+      - "7688:7687"
+    environment:
+      NEO4J_AUTH: neo4j/anothersecret

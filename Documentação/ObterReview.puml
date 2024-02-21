@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor User as USR
+participant ReviewController
+participant ReviewService
+participant ProductRepository
+participant ReviewRepository
+participant BaseDados
+
+activate USR
+USR -> ReviewController: GET /products/{sku}/reviews/{status}
+activate ReviewController
+ReviewController -> ReviewService: getReviewsOfProduct(sku, status)
+activate ReviewService
+
+ReviewService --> ProductRepository: product = findBySku(sku)
+activate ProductRepository
+ProductRepository -> BaseDados: findBySku(sku)
+activate BaseDados
+deactivate BaseDados
+deactivate ProductRepository
+
+ReviewService -> ReviewRepository: r = findByProductIdStatus(product.get(), status)
+activate ReviewRepository
+ReviewRepository -> BaseDados: findByProductIdStatus(product, status)
+activate BaseDados
+deactivate BaseDados
+deactivate ReviewRepository
+
+ReviewController --> USR: Retorna a lista de reviews
+deactivate ReviewController
+deactivate USR
+@enduml
